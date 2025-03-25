@@ -40,6 +40,7 @@ class Vote < ApplicationRecord
     "O" => "Off-topic",
     "A" => "Already Posted",
     "B" => "Broken Link",
+    "P" => "Promote",
     "S" => "Spam",
     "" => "Cancel"
   }.freeze

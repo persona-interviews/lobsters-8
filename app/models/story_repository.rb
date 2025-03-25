@@ -13,9 +13,13 @@ class StoryRepository
   end
 
   def hottest
+    # Get base set of stories
     hottest = Story.base(@user).positive_ranked.not_hidden_by(@user)
     hottest = hottest.filter_tags(@params[:exclude_tags] || [])
-    hottest.order("hotness")
+    
+    # Get promoted stories first, then other stories by hotness
+    promoted_ids = Vote.where(comment_id: nil, vote: -1, reason: 'P').select(:story_id)
+    hottest.order(Arel.sql("CASE WHEN stories.id IN (#{promoted_ids.to_sql}) THEN 0 ELSE 1 END, hotness"))
   end
 
   def hidden
@@ -40,6 +44,14 @@ class StoryRepository
       .order("latest_comment_id desc")
   end
 
+  def promoted
+    promoted_story_ids = Vote.where(comment_id: nil, vote: -1, reason: 'P').select(:story_id)
+    Story.base(@user)
+      .where(id: promoted_story_ids)
+      .filter_tags(@params[:exclude_tags] || [])
+      .order(created_at: :desc)
+  end
+
   def newest_by_user(user)
     # Story.base without unmerged scope
     Story.where(user: user).includes(:tags).not_deleted(@user).mod_preload?(@user).order(id: :desc)
@@ -60,4 +72,20 @@ class StoryRepository
       "#{length[:dur]} #{length[:intv].upcase})")
     top.order("score DESC")
   end
+
+  def ama
+    Story.base(@user)
+      .where("LOWER(title) LIKE ?", "%ama%")
+      .filter_tags(@params[:exclude_tags] || [])
+      .order(created_at: :desc)
+  end
+
+  def past
+    Story.base(@user)
+      .where("created_at BETWEEN NOW() - INTERVAL 48 HOUR AND NOW() - INTERVAL 24 HOUR")
+      .filter_tags(@params[:exclude_tags] || [])
+      .order(created_at: :desc)
+  end
+
+  private
 end
