@@ -40,8 +40,8 @@ class Vote < ApplicationRecord
     "O" => "Off-topic",
     "A" => "Already Posted",
     "B" => "Broken Link",
-    "P" => "Promote",
     "S" => "Spam",
+    "P" => "Promote",
     "" => "Cancel"
   }.freeze
   ALL_STORY_REASONS = STORY_REASONS.merge({
@@ -146,15 +146,13 @@ class Vote < ApplicationRecord
     else
       0
     end
+
     flag_delta = if v.vote == -1
-      # we know there's a change, so we must be removing a flag
-      -1
+      -1  # removing flag
     elsif new_vote == -1
-      # we know there's a change, so we must be adding a flag
-      1
+      1   # adding flag
     else
-      # change from 1 to 0 or 0 to 1, so number of flags doesn't change
-      0
+      0   # no flag change
     end
 
     if new_vote == 0
@@ -167,7 +165,7 @@ class Vote < ApplicationRecord
 
     if update_counters
       t = v.target
-      if v.user_id != t.user_id
+      if score_delta != 0 && v.user_id != t.user_id
         User.update_counters t.user_id, karma: score_delta
       end
       t.update_score_and_recalculate!(score_delta, flag_delta)

@@ -386,7 +386,7 @@ class Comment < ApplicationRecord
     # when it is 'wrong', it gives a stable sort.
     Comment.connection.execute <<~SQL
       UPDATE comments SET
-        score = (select coalesce(sum(vote), 0) from votes where comment_id = comments.id),
+        score = (select count(*) from votes where comment_id = comments.id and vote = 1),
         flags = (select count(*) from votes where comment_id = comments.id and vote = -1),
         confidence = #{new_confidence},
         confidence_order = concat(lpad(char(65535 - floor(#{new_confidence} * 65535) using binary), 2, '\0'), char(id & 0xff using binary))
