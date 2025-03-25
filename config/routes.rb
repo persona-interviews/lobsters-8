@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   get "/active" => "home#active"
   get "/active/page/:page" => "home#active"
   get "/promoted" => "home#promoted", :as => "promoted"
+  get "/promoted/page/:page" => "home#promoted"
   get "/newest" => "home#newest"
   get "/newest/page/:page" => "home#newest"
   get "/recent" => "home#recent"
@@ -268,7 +269,9 @@ Rails.application.routes.draw do
 
   post "/csp-violation-report" => "csp#violation_report"
 
-  get "/promoted/page/:page" => "home#promoted"
   get "/ama" => "home#ama"
   get "/ama/page/:page" => "home#ama"
+
+  get "/past" => "home#past"
+  get "/past/page/:page" => "home#past"
 end

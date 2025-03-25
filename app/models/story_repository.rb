@@ -80,5 +80,12 @@ class StoryRepository
       .order(created_at: :desc)
   end
 
+  def past
+    Story.base(@user)
+      .where("created_at BETWEEN NOW() - INTERVAL 48 HOUR AND NOW() - INTERVAL 24 HOUR")
+      .filter_tags(@params[:exclude_tags] || [])
+      .order(created_at: :desc)
+  end
+
   private
 end

@@ -352,6 +352,20 @@ class HomeController < ApplicationController
     end
   end
 
+  def past
+    @stories, @show_more = get_from_cache(past: true) {
+      paginate stories.past
+    }
+
+    @title = "Yesterday's Stories"
+    @above = {partial: "stories/subnav"}
+
+    respond_to do |format|
+      format.html { render action: "index" }
+      format.json { render json: @stories }
+    end
+  end
+
   private
 
   def filtered_tag_ids
