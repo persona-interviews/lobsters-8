@@ -338,6 +338,20 @@ class HomeController < ApplicationController
     render action: "index"
   end
 
+  def ama
+    @stories, @show_more = get_from_cache(ama: true) {
+      paginate stories.ama
+    }
+
+    @title = "Ask Me Anything (AMA)"
+    @above = {partial: "stories/subnav"}
+
+    respond_to do |format|
+      format.html { render action: "index" }
+      format.json { render json: @stories }
+    end
+  end
+
   private
 
   def filtered_tag_ids

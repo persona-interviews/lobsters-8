@@ -72,4 +72,13 @@ class StoryRepository
       "#{length[:dur]} #{length[:intv].upcase})")
     top.order("score DESC")
   end
+
+  def ama
+    Story.base(@user)
+      .where("LOWER(title) LIKE ?", "%ama%")
+      .filter_tags(@params[:exclude_tags] || [])
+      .order(created_at: :desc)
+  end
+
+  private
 end
