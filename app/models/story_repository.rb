@@ -13,9 +13,13 @@ class StoryRepository
   end
 
   def hottest
+    # Get base set of stories
     hottest = Story.base(@user).positive_ranked.not_hidden_by(@user)
     hottest = hottest.filter_tags(@params[:exclude_tags] || [])
-    hottest.order("hotness")
+    
+    # Get promoted stories first, then other stories by hotness
+    promoted_ids = Vote.where(comment_id: nil, vote: -1, reason: 'P').select(:story_id)
+    hottest.order(Arel.sql("CASE WHEN stories.id IN (#{promoted_ids.to_sql}) THEN 0 ELSE 1 END, hotness"))
   end
 
   def hidden
@@ -38,6 +42,14 @@ class StoryRepository
           comments.created_at >= date_sub(now(), interval 3 day)
       ) as latest_comment_id')
       .order("latest_comment_id desc")
+  end
+
+  def promoted
+    promoted_story_ids = Vote.where(comment_id: nil, vote: -1, reason: 'P').select(:story_id)
+    Story.base(@user)
+      .where(id: promoted_story_ids)
+      .filter_tags(@params[:exclude_tags] || [])
+      .order(created_at: :desc)
   end
 
   def newest_by_user(user)

@@ -134,6 +134,7 @@ Rails.application.routes.draw do
   end
   get "/comments/page/:page" => "comments#index"
   get "/comments" => "comments#index"
+  get "/promoted" => "home#promoted", :as => "promoted"
 
   get "/messages/sent" => "messages#sent"
   get "/messages" => "messages#index"

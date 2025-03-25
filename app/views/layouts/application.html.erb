@@ -52,6 +52,7 @@
       <nav class="links">
         <%= link_to_different_page 'Active', active_path %>
         <%= link_to_different_page 'Recent', recent_path %>
+        <%= link_to_different_page 'Promoted', promoted_path %>
         <%= link_to_different_page 'Comments', comments_path %>
 
         <% if @user && @user.can_submit_stories? %>

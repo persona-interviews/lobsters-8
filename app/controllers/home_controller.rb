@@ -327,6 +327,17 @@ class HomeController < ApplicationController
     end
   end
 
+  def promoted
+    @stories, @show_more = get_from_cache(promoted: true) {
+      paginate stories.promoted
+    }
+
+    @title = "Promoted Stories"
+    @above = {partial: "stories/subnav"}
+
+    render action: "index"
+  end
+
   private
 
   def filtered_tag_ids
